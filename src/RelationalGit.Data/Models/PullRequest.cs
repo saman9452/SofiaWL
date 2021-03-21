@@ -34,5 +34,7 @@ namespace RelationalGit.Data
         public DateTime? OccurrenceDateTime => CreatedAtDateTime;
 
         public string EventId => Number.ToString();
+
+        public string OverlapPullRequest { get; set; }
     }
 }
