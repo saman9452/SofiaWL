@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.IO;
+using RelationalGit.Data.Models;
 
 namespace RelationalGit.Data
 {
@@ -126,6 +127,12 @@ namespace RelationalGit.Data
         public DbQuery<PeriodReviewerCountQuery> PeriodReviewerCountQuery {get;set;}
 
         public DbQuery<ReviewersParticipationDateTimeQuery> ReviewersParticipationDateTimeQuery { get; set; }
+
+        public DbSet<DeveloperOpenReview> DeveloperOpenReviews { get; set; }
+
+        public DbSet<OpenReviewSummary> OpenReviewSummaries { get; set; }
+
+        public DbSet<OpenReviewAverage> OpenReviewAverages { get; set; } 
 
         public Dictionary<string, string> GetCanonicalPaths()
         {
