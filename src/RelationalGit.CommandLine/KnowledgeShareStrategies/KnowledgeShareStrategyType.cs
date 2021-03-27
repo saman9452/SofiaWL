@@ -27,5 +27,7 @@ namespace RelationalGit.KnowledgeShareStrategies
         public static string ContributionRec => "ContributionRec";
 
         public static string WhoDoRec => "WhoDo";
+
+        public static string SofiaWLRec => "SofiaWL";
     }
 }

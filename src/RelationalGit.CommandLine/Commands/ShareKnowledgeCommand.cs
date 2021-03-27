@@ -8,6 +8,7 @@ using EFCore.BulkExtensions;
 using RelationalGit.Data;
 using RelationalGit.Simulation;
 using RelationalGit.KnowledgeShareStrategies;
+using RelationalGit.Data.Models;
 
 namespace RelationalGit.Commands
 {
@@ -304,6 +305,7 @@ namespace RelationalGit.Commands
 
             _dbContext.BulkInsert(bulkEntities,new BulkConfig { BulkCopyTimeout=0});
         }
+        
 
         private LossSimulation CreateLossSimulation(LossSimulationOption lossSimulationOption)
         {
