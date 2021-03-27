@@ -51,6 +51,8 @@ namespace RelationalGit.Simulation
 
         public Dictionary<string,List<string>> _fileOwners { get; set; } = null;
 
+        public List<long> Overlap { get; set; }
+
         public bool PullRequestFilesAreSafe
         {
             get

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RelationalGit.Data;
 
@@ -113,6 +114,25 @@ namespace RelationalGit.Simulation
         internal Dictionary<string, List<Commit>> GetCommitters()
         {
             return _mapDeveloperCommit;
+        }
+        //Fahimeh
+
+        public int GetDeveloperCommitsOnFile(string normalizedName, string path, DateTime pullReqTime, DateTime Recent)
+        {
+            var developersFileCommitsDetails = _map.GetValueOrDefault(path);
+            if (developersFileCommitsDetails == null)
+                return 0;
+            var developercommits = developersFileCommitsDetails.Where(a => a.Key == normalizedName).FirstOrDefault();
+
+            if (developercommits.Value == null)
+                return 0;
+            Recent = DateTime.MinValue;
+            var filtered = developercommits.Value.Commits.Where(b => b.AuthorDateTime < pullReqTime);
+            if (filtered.Count() > 0)
+            {
+                Recent = filtered.Max(a => a.CommitterDateTime);
+            }
+            return filtered.Count();
         }
     }
 }

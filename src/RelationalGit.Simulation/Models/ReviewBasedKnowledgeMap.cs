@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using RelationalGit.Data;
@@ -104,6 +105,35 @@ namespace RelationalGit.Simulation
         public Dictionary<string, List<PullRequest>> GetReviewers()
         {
             return _mapDeveloperReview;
+        }
+        //Fahimeh
+        public Dictionary<int, DateTime> GetReviowersOnFile(string normalizedName, string path)
+        {
+
+            var developersFileReviews = _map.GetValueOrDefault(path);
+
+            if (developersFileReviews == null)
+            {
+                return new Dictionary<int, DateTime>
+                {
+                    [0] = DateTime.MinValue,
+                };
+            }
+            var number2 = developersFileReviews.Where(q => q.Key == normalizedName);
+            if (number2.Count() == 0)
+            {
+                return new Dictionary<int, DateTime>
+                {
+                    [0] = DateTime.MinValue,
+                };
+            }
+
+            var recency = number2.Select(a => a.Value.PullRequests.Max(b => b.CreatedAtDateTime)).FirstOrDefault();
+
+            return new Dictionary<int, DateTime>
+            {
+                [number2.Count()] = recency ?? DateTime.MinValue,
+            };
         }
     }
 }

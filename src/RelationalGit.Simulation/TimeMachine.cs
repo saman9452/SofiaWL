@@ -210,6 +210,15 @@ namespace RelationalGit.Simulation
 
             var actualReviewers = GetKnowledgeOfActualReviewers(PullRequestReviewersDic.GetValueOrDefault(pullRequest.Number) ?? new List<string>(0), pullRequestKnowledgeableDevelopers);
 
+            List<long> OverlapPull = new List<long>();
+            var Overlap = pullRequest.OverlapPullRequest;
+            if (Overlap != null)
+            {
+                var list = Overlap.Split(",").ToList();
+                list.RemoveAt(list.Count - 1);
+                OverlapPull = list.Select(long.Parse).ToList();
+            }
+
             return new PullRequestContext()
             {
                 SelectedReviewersType = _selectedReviewersType,
@@ -224,7 +233,8 @@ namespace RelationalGit.Simulation
                 Periods = this.PeriodsDic,
                 Developers = new ReadOnlyDictionary<string, Developer>(DevelopersDic),
                 Blames = BlameBasedKnowledgeMap.GetSnapshopOfPeriod(period.Id),
-                PullRequestKnowledgeables = pullRequestKnowledgeableDevelopers
+                PullRequestKnowledgeables = pullRequestKnowledgeableDevelopers,
+                Overlap = OverlapPull
             };
         }
 
