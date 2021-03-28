@@ -56,6 +56,13 @@ namespace RelationalGit.Commands
                 SavePullRequestReviewes(knowledgeDistributioneMap, lossSimulation);
                 _logger.LogInformation("{datetime}: RecommendedPullRequestReviewes are saved successfully.", DateTime.Now);
 
+                SaveOpenReviews(knowledgeDistributioneMap, lossSimulation);
+                _logger.LogInformation("{datetime}: Developer OpenReviews are saved successfully.", DateTime.Now);
+                
+                _logger.LogInformation("{datetime}: Developer OpenReviewSummary are saved successfully.", DateTime.Now);
+               
+                _logger.LogInformation("{datetime}: Developer OpenReviewSummaryAverage are saved successfully.", DateTime.Now);
+
                 SaveOwnershipDistribution(knowledgeDistributioneMap, lossSimulation, leavers);
                 _logger.LogInformation("{datetime}: Ownership Distribution is saved Successfully.", DateTime.Now);
 
@@ -288,7 +295,179 @@ namespace RelationalGit.Commands
 
             _dbContext.BulkInsert(bulkEntities, new BulkConfig { BatchSize = 50000});
         }
+        private void SaveOpenReviews(KnowledgeDistributionMap knowledgeMap, LossSimulation lossSimulation)
+        {
+            var bulkEntities = new List<RecommendedPullRequestReviewer>();
+            var bulkDeveloperOpenReviews = new List<DeveloperOpenReview>();
+            foreach (var pullRequestReviewerItem in knowledgeMap.PullRequestSimulatedRecommendationMap)
+            {
+                var pullRequest = _dbContext.PullRequests;
+                var pullRequestNumber = pullRequestReviewerItem.Key;
+                var pull = pullRequest.Where(a => a.Number == pullRequestNumber).FirstOrDefault();
+                var startDate = pull.CreatedAtDateTime ?? DateTime.MinValue;
+                var endDate = pull.ClosedAtDateTime ?? DateTime.MinValue;
+                var selectedReviewers = pullRequestReviewerItem.Value.SelectedReviewers;
+                var time = startDate;
+                foreach (var reviewer in selectedReviewers)
+                {
+                    while (time.Year <= endDate.Year && time.Month <= endDate.Month && time.Day <= endDate.Day)
+                    {
+                        var result = bulkDeveloperOpenReviews.Where(b => b.SimulationId == lossSimulation.Id &&
+                            b.DateTime.Year == time.Year && b.DateTime.Month == time.Month && b.DateTime.Day == time.Day &&
+                            b.NormalizedName == reviewer).FirstOrDefault();
+                        if (result != null)
+                        {
+                            result.OpenReviews++;
+                            result.PullRequests += "," + pull.Number.ToString();
+                        }
+                        else
+                        {
+                            bulkDeveloperOpenReviews.Add(new DeveloperOpenReview()
+                            {
+                                NormalizedName = reviewer,
+                                DateTime = new DateTime(time.Year, time.Month, time.Day),
+                                OpenReviews = 1,
+                                SimulationId = lossSimulation.Id,
+                                PullRequests = pull.Number.ToString()
 
+                            });
+                        }
+                        time = time.AddDays(1);
+                    }
+
+                }
+
+
+            }
+            var DeveloperOpenReviews = bulkDeveloperOpenReviews
+                   .Where(a => a.SimulationId == lossSimulation.Id).GroupBy(a => a.DateTime).Select(q =>
+                   new { OpenRev = q.Select(a => a.OpenReviews), Date = q.Key }).ToList();
+            var bulkOpenReviewsSummary = new List<OpenReviewSummary>();
+            foreach (var openInDay in DeveloperOpenReviews)
+            {
+
+                var date = openInDay.Date;
+                int[] openReviews = openInDay.OpenRev.ToArray();
+                Dictionary<double, int> eighty = openReviews.Count() == 1 ? new Dictionary<double, int>() { [openReviews[0]] = 1 } : QUARTILE(openReviews, 4);
+                var workload_eighty = openReviews.ToList().Where(a => a >= eighty.Keys.FirstOrDefault()).Sum();
+                var openReview = openReviews.ToList().Where(a => a >= eighty.Keys.FirstOrDefault()).Average();
+                bulkOpenReviewsSummary.Add(new OpenReviewSummary
+                {
+                    Min = openReviews.Min(),
+                    Max = openReviews.Max(),
+                    Average = openReviews.Average(),
+                    ReviewerNumbers = openReviews.Count(),
+                    EightyPercentileNum = eighty.Values.FirstOrDefault(),
+                    FirstQu = openReviews.Count() == 1 ? openReviews[0] : QUARTILE(openReviews, 1).Keys.FirstOrDefault(),
+                    Median = openReviews.Count() == 1 ? openReviews[0] : QUARTILE(openReviews, 2).Keys.FirstOrDefault(),
+                    ThirdQu = openReviews.Count() == 1 ? openReviews[0] : QUARTILE(openReviews, 3).Keys.FirstOrDefault(),
+                    Eighty_percentile = eighty.Keys.FirstOrDefault(),
+                    Eighty_workload = workload_eighty,
+                    SimulationId = lossSimulation.Id,
+                    DateTime = date,
+                    Average_open_review = openReview,
+                });
+
+
+            }
+            var bulkOpenReviewsSummaryAverage = new List<OpenReviewAverage>();
+            var openreviewSummary = bulkOpenReviewsSummary.Where(a => a.SimulationId == lossSimulation.Id).OrderBy(b => b.DateTime);
+            var periods = _dbContext.Periods;
+            foreach (var period in periods)
+            {
+                var startDate = period.FromDateTime;
+                var endDate = period.ToDateTime;
+                var periodData = openreviewSummary.Where(a => a.DateTime >= startDate && a.DateTime <= endDate);
+                if (periodData.Count() == 0)
+                    continue;
+                bulkOpenReviewsSummaryAverage.Add(new OpenReviewAverage
+                {
+                    SimulationId = lossSimulation.Id,
+                    PeriodId = period.Id,
+                    MaxAverage = periodData.Average(a => a.Max),
+                    MinAverage = periodData.Average(a => a.Min),
+                    Average = periodData.Average(a => a.Average),
+                    FirstQu = periodData.Average(a => a.FirstQu),
+                    Median = periodData.Average(a => a.Median),
+                    ThirdQu = periodData.Average(a => a.ThirdQu),
+                    Eighty_percentile = periodData.Average(a => a.Eighty_percentile),
+                    EightyPercentileNum = periodData.Average(a => a.EightyPercentileNum),
+                    ReviewerNumbers = periodData.Average(a => a.ReviewerNumbers),
+                    Eighty_workload = periodData.Average(a => a.Eighty_workload),
+                    Open_Review = periodData.Average(a => a.Average_open_review)
+                });
+            }
+
+            
+            _dbContext.BulkInsert(bulkDeveloperOpenReviews, new BulkConfig { BatchSize = 50000, BulkCopyTimeout = 0 });
+            _dbContext.BulkInsert(bulkOpenReviewsSummary, new BulkConfig { BatchSize = 50000, BulkCopyTimeout = 0 });
+            _dbContext.BulkInsert(bulkOpenReviewsSummaryAverage, new BulkConfig { BatchSize = 50000, BulkCopyTimeout = 0 });
+            
+        }
+
+
+        internal static Dictionary<double, int> QUARTILE(int[] array, int nth_quartile)
+        {
+            Array.Sort(array);
+            double dblPercentage = 0;
+
+            switch (nth_quartile)
+            {
+                case 0:
+                    dblPercentage = 0; //Smallest value in the data set
+                    break;
+                case 1:
+                    dblPercentage = 25; //First quartile (25th percentile)
+                    break;
+                case 2:
+                    dblPercentage = 50; //Second quartile (50th percentile)
+                    break;
+
+                case 3:
+                    dblPercentage = 75; //Third quartile (75th percentile)
+                    break;
+                case 4:
+                    dblPercentage = 80;
+                    break;
+                case 5:
+                    dblPercentage = 95;
+                    break;
+                case 6:
+                    dblPercentage = 100; //Largest value in the data set
+                    break;
+                default:
+                    dblPercentage = 0;
+                    break;
+            }
+
+            var res = Convert.ToDouble(array[array.Length - 1]);
+            if (dblPercentage >= 100.0d) return new Dictionary<double, int>() { [res] = array.Length };
+
+            double position = (double)(array.Length + 1) * dblPercentage / 100.0;
+            double leftNumber = 0.0d, rightNumber = 0.0d;
+
+            double n = dblPercentage / 100.0d * (array.Length - 1) + 1.0d;
+
+            if (position >= 1)
+            {
+                leftNumber = array[(int)System.Math.Floor(n) - 1];
+                rightNumber = array[(int)System.Math.Floor(n)];
+            }
+            else
+            {
+                leftNumber = array[0]; // first data
+                rightNumber = array[1]; // first data
+            }
+
+            if (leftNumber == rightNumber)
+                return new Dictionary<double, int>() { [leftNumber] = (int)System.Math.Floor(n) - 1 };
+            else
+            {
+                double part = n - System.Math.Floor(n);
+                return new Dictionary<double, int>() { [leftNumber + part * (rightNumber - leftNumber)] = (int)System.Math.Floor(n) - 1 };
+            }
+        }
+       
         private void SavePullRequestReviewes(KnowledgeDistributionMap knowledgeMap, LossSimulation lossSimulation)
         {
             var bulkEntities = new List<RecommendedPullRequestReviewer>();
