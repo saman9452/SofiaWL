@@ -192,5 +192,7 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy RetentionRec  -
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy LearnRec  --conf-path $corefx_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy TurnoverRec --conf-path $corefx_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy Sofia  --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo  --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy SofiaWL  --conf-path $corefx_conf
 
 ```
