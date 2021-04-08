@@ -7,6 +7,8 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using RelationalGit.Data;
+using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace RelationalGit.Calculation
 {
@@ -16,10 +18,12 @@ namespace RelationalGit.Calculation
         {
             if (!Directory.Exists(analyzeResultPath))
                 Directory.CreateDirectory(analyzeResultPath);
-
+           
+            CalculateOpenReviews(actualSimulationId, recommenderSimulationIds, analyzeResultPath);
             CalculateFaRReduction(actualSimulationId, recommenderSimulationIds, analyzeResultPath);
             CalculateExpertiseLoss(actualSimulationId, recommenderSimulationIds, analyzeResultPath);
             CalculateWorkload(actualSimulationId, recommenderSimulationIds, 10, analyzeResultPath);
+          
         }
 
         public void CalculateWorkload(long actualId, long[] simulationsIds, int topReviewers, string path)
@@ -524,10 +528,64 @@ namespace RelationalGit.Calculation
                     result.Add(simulationResult);
                 }
             }
+        }
+        private static void CalculateOpenReviews(long actualId,long[] simulationsIds, string path)
+            {
+            var result = new List<OpenReviewResult>();
+            foreach (var simulationId in simulationsIds){
 
-            result = result.OrderBy(q => q.LossSimulation.KnowledgeShareStrategyType).ToList();
-            Write(result, Path.Combine(path, "far_raw.csv"));
+                var values = new List<int>();
 
+                var AppSettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "relationalgit.json");
+                
+                var builder = new ConfigurationBuilder()
+              .AddJsonFile(AppSettingsPath);
+
+                var Configuration = builder.Build();
+
+                string connectionString =  Configuration.GetConnectionString("RelationalGit");
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    var queryString = $@"SELECT  NormalizedName,
+     count(distinct(pullRequestId))as pulls,
+      DATEPART(QUARTER, DateTime) ,  DATEPART(year, Datetime)
+  FROM [dbo].[DeveloperReviews] where SimulationId = @simId  Group by DATEPART(QUARTER, Datetime)  , NormalizedName,  DATEPART(year, Datetime)
+  order by pulls desc";
+                    SqlCommand command = new SqlCommand(queryString, connection);
+                    command.Parameters.AddWithValue("@simId", simulationId);
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            values.Add(Convert.ToInt32(reader["pulls"]));
+                        }
+                    }
+                    finally
+                    {
+                        // Always call Close when done reading.
+                        reader.Close();
+                    }
+                }
+                using (var dbContext = GetDbContext())
+                {
+                    var lossSimulation = dbContext.LossSimulations.Single(q => q.Id == simulationId);
+
+
+                    var openRevResult = new OpenReviewResult()
+                    {
+                        LossSimulation = lossSimulation
+                    };
+
+                    openRevResult.Results = values;
+
+
+                    result.Add(openRevResult);
+                }
+                
+            }
+            WriteOprnReviws(result, Path.Combine(path, "auc.csv"));
         }
 
         private static void CalculateTotalFaRRaw(long[] simulationsIds, string path)
@@ -652,7 +710,69 @@ namespace RelationalGit.Calculation
                 }
             }
         }
+        private static void WriteOprnReviws(IEnumerable<OpenReviewResult> openReviewResults, string path)
+        {
+            using (var dt = new DataTable())
+            {
+               
+                foreach (var openRevResult in openReviewResults)
+                {
+                    dt.Columns.Add(openRevResult.LossSimulation.KnowledgeShareStrategyType + "-" + openRevResult.LossSimulation.Id, typeof(double));
+                }
 
+                var rows = openReviewResults.ElementAt(0).Results
+                    
+                    .OrderBy(q => q)
+                    .Select(q =>
+                    {
+                        var row = dt.NewRow();
+                        row[0] = q;
+                        return row;
+                    }).ToArray();
+
+
+                for (int j = 0; j < rows.Length - 1; j++)
+                {
+                    for (int i = 0; i < openReviewResults.Count(); i++)
+                    {
+                        rows[j][i] = openReviewResults.ElementAt(i).Results[j];
+                    }
+                    dt.Rows.Add(rows[j]);
+                }
+
+                for (int j = dt.Rows.Count - 1; j >= 0; j--)
+                {
+                    var isRowConstant = IsRowConstant(dt.Rows[j]);
+
+                    if (isRowConstant)
+                    {
+                        dt.Rows.RemoveAt(j);
+                    }
+                }
+
+               
+               
+
+                using (var writer = new StreamWriter(path))
+                using (var csv = new CsvWriter(writer))
+                {
+                    foreach (DataColumn column in dt.Columns)
+                    {
+                        csv.WriteField(column.ColumnName);
+                    }
+                    csv.NextRecord();
+
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        for (var i = 0; i < dt.Columns.Count; i++)
+                        {
+                            csv.WriteField(row[i]);
+                        }
+                        csv.NextRecord();
+                    }
+                }
+            }
+        }
         private static bool IsRowConstant(DataRow row)
         {
             if (row.Table.Columns.Count <= 2)
@@ -685,6 +805,14 @@ namespace RelationalGit.Calculation
             public double Median => Results.Select(q => q.Value).OrderBy(q => q).Take(Results.Count - 1).Median();
 
             public double Average => Results.Select(q => q.Value).Average();
+        }
+        public class OpenReviewResult
+        {
+            public LossSimulation LossSimulation { get; set; }
+
+            public List<int> Results { get; set; } = new List<int>();
+
+            
         }
 
         private static double CalculateIncreasePercentage(double first, double second)
