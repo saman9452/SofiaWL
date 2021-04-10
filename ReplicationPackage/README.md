@@ -152,8 +152,8 @@ dotnet-rgit --cmd analyze-simulations --analyze-result-path "path_to_result" --r
 
 ### Expertise and FAR results
 
-The tool creates three csv files, **expertise.csv**, and **far.csv** respectively. The first column always shows the project's periods (quarters). Each column corresponds to one of the simulations. Each cell shows the percentage change between the actual outcome and the simulated outcome in that period. The last row of a column shows the median of its values. Note the **workload.csv** file is the prior workload measure used in the original ICSE version of the paper.
-
+The tool creates four csv files, **expertise.csv**, **far.csv**, **workload.csv** and **auc.csv**  respectively. In the first three files, the first column shows the project's periods (quarters). Each column corresponds to one of the simulations. Each cell shows the percentage change between the actual outcome and the simulated outcome in that period. The last row of a column shows the median of its values. Note the **workload.csv** file is the prior workload measure used in the original ICSE version of the paper.
+**auc.csv** shows the number of reviews of developers in each quarter.
 The following table illustrates how a csv file of a project with 5 periods is formatted, assuming that only cHRev, TurnoverRec, and Sofia got compared with reality.
 
 | Periods       | cHRev         | cHRev         | TurnoverRec   | Sofia         |
