@@ -112,7 +112,8 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy sofia  --conf-p
 ### Empirical RQ4, Review Workload: How is the review workload distributed across developers?
 
 ```PowerShell
-#
+# Get developer open review analyze-type is "day", "week", "month", "quarter", "year"
+dotnet-rgit --cmd  get-workload --analyze-type <analyze-type> --analyze-result-path "path_to_result"  --reality-simulation <reality_id>  --conf-path <path_to_config_file>
 ```
 
 To calculate the actual review workload run [ActualWorkload.r](WorkloadMeasures/ActualWorkload.R). The data from the paper is available in [CSV](Data/Workload/Actual/) format.
@@ -120,14 +121,17 @@ To calculate the actual review workload run [ActualWorkload.r](WorkloadMeasures/
 ### Simulation RQ5, Workload Aware: WhoDo is designed to be workload aware, but can it also balance Expertise, Workload, and FarR
 
 ```PowerShell
-#
+#WhoDo recommender
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo  --conf-path <path_to_config_file>
+
 ```
 ---
 
 ### Simulation RQ6: Ownership, Turnover, and Workload Aware: Can we combine the recommenders to balance Expertise, Workload, and FaR?
 
 ```PowerShell
-#
+#SofiaWL recommender
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy SofiaWL  --conf-path <path_to_config_file>
 ```
 ---
 
