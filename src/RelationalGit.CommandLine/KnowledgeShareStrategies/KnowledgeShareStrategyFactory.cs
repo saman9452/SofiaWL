@@ -66,7 +66,11 @@ namespace RelationalGit.KnowledgeShareStrategies
             {
                 return new SofiaWLRecommendationStrategy(knowledgeSaveReviewerReplacementType, logger, numberOfPeriodsForCalculatingProbabilityOfStay, pullRequestReviewerSelectionStrategy, addOnlyToUnsafePullrequests, recommenderOption, changePast);
             }
-            throw new ArgumentException($"invalid {nameof(recommendationStrategy)}");
+            else if (recommendationStrategy == KnowledgeShareStrategyType.OwnerShipKnowledgeShare)
+            {
+                return new OwnerShipKnowledgeShareStrategy(knowledgeSaveReviewerReplacementType, logger, pullRequestReviewerSelectionStrategy, addOnlyToUnsafePullrequests, recommenderOption, changePast);
+            } 
+                throw new ArgumentException($"invalid {nameof(recommendationStrategy)}");
         }
     }
 }

@@ -129,7 +129,7 @@ namespace RelationalGit.Data
 
         public DbQuery<ReviewersParticipationDateTimeQuery> ReviewersParticipationDateTimeQuery { get; set; }
 
-        public DbQuery<DeveloperReview> DeveloperReviews { get; set; }
+        public DbSet<DeveloperReview> DeveloperReviews { get; set; }
 
         public Dictionary<string, string> GetCanonicalPaths()
         {

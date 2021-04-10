@@ -129,6 +129,9 @@ namespace RelationalGit.CommandLine
         [Option("analyze-result-path")]
         public string AnalyzeResultPath { get; set; }
 
+        [Option("analyze-type")]
+        public string AnalyzeType { get; set; }
+
         internal InputOption Override(InputOption fileConfigurationOption)
         {
             var overridedInputOption = new InputOption()
@@ -176,6 +179,7 @@ namespace RelationalGit.CommandLine
             overridedInputOption.ActualSimulationId = Override(ActualSimulationId, fileConfigurationOption.ActualSimulationId);
             overridedInputOption.NoReviewsSimulationId = Override(NoReviewsSimulationId, fileConfigurationOption.NoReviewsSimulationId);
             overridedInputOption.RecommenderSimulationId = Override(RecommenderSimulationId, fileConfigurationOption.RecommenderSimulationId);
+            overridedInputOption.AnalyzeType = Override(AnalyzeType, fileConfigurationOption.AnalyzeType);
 
             return overridedInputOption;
         }

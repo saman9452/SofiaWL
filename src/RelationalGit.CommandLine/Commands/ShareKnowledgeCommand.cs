@@ -55,22 +55,19 @@ namespace RelationalGit.Commands
             {
                 SavePullRequestReviewes(knowledgeDistributioneMap, lossSimulation);
                 _logger.LogInformation("{datetime}: RecommendedPullRequestReviewes are saved successfully.", DateTime.Now);
-
-                SaveOpenReviews(knowledgeDistributioneMap, lossSimulation);
-                _logger.LogInformation("{datetime}: Developer OpenReviews are saved successfully.", DateTime.Now);
-                
-                _logger.LogInformation("{datetime}: Developer OpenReviewSummary are saved successfully.", DateTime.Now);
-               
-                _logger.LogInformation("{datetime}: Developer OpenReviewSummaryAverage are saved successfully.", DateTime.Now);
-
                 SaveOwnershipDistribution(knowledgeDistributioneMap, lossSimulation, leavers);
                 _logger.LogInformation("{datetime}: Ownership Distribution is saved Successfully.", DateTime.Now);
 
                 SavePullRequestSimulatedRecommendationResults(knowledgeDistributioneMap, lossSimulation);
                 _logger.LogInformation("{datetime}: Pull Requests Recommendation Results are saved Successfully.", DateTime.Now);
 
+                SaveOpenReviews(knowledgeDistributioneMap, lossSimulation);
+                _logger.LogInformation("{datetime}: Developer OpenReviews are saved successfully.", DateTime.Now);
+
+
                 transaction.Commit();
                 _logger.LogInformation("{datetime}: Transaction is committed.", DateTime.Now);
+
             }
 
             _logger.LogInformation("{datetime}: trying to save results into database", DateTime.Now);
@@ -297,16 +294,16 @@ namespace RelationalGit.Commands
         }
         private void SaveOpenReviews(KnowledgeDistributionMap knowledgeMap, LossSimulation lossSimulation)
         {
-            var bulkEntities = new List<RecommendedPullRequestReviewer>();
+     
             var bulkDeveloperOpenReviews = new List<DeveloperReview>();
             foreach (var pullRequestReviewerItem in knowledgeMap.PullRequestSimulatedRecommendationMap)
             {
                 var pullRequest = _dbContext.PullRequests;
                 var pullRequestNumber = pullRequestReviewerItem.Key;
                 var pull = pullRequest.Where(a => a.Number == pullRequestNumber).FirstOrDefault();
-              
+
                 var selectedReviewers = pullRequestReviewerItem.Value.SelectedReviewers;
-                
+
                 foreach (var reviewer in selectedReviewers)
                 {
                     var startDate = pull.CreatedAtDateTime ?? DateTime.MinValue;
@@ -328,13 +325,11 @@ namespace RelationalGit.Commands
 
 
                 }
-
-
             }
+           var t =  _dbContext.DeveloperReviews.Where(a => a.Id == 4).ToArray();
+            _dbContext.BulkInsert(bulkDeveloperOpenReviews, new BulkConfig { BatchSize = 500000 });
 
-            _dbContext.BulkInsert(bulkDeveloperOpenReviews, new BulkConfig { BatchSize = 50000, BulkCopyTimeout = 0 });
-        
-    }
+        }
        
         private void SavePullRequestReviewes(KnowledgeDistributionMap knowledgeMap, LossSimulation lossSimulation)
         {
