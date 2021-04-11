@@ -17,6 +17,9 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Version>2.0.3</Version>
     <PackageId>SofiaWL</PackageId>
+    <ApplicationIcon />
+    <StartupObject />
+    <Win32Resource />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
