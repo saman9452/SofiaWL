@@ -6,16 +6,20 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>dotnet-rgit</ToolCommandName>
-    <Authors>Ehsan Mirsaeedi, Peter Rigby</Authors>
-    <Company />
+    <Authors>Fahimeh Hajari, Ehsan Mirsaeedi, Peter Rigby</Authors>
+    <Company>Fahimeh Hajari, Ehsan Mirsaeedi, Peter Rigby</Company>
     <Title>RelationalGit</Title>
-    <PackageLicenseUrl>https://github.com/mirsaeedi/RelationalGit</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/mirsaeedi/RelationalGit</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/mirsaeedi/RelationalGit</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/fahimeh1368/SofiaWL</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/fahimeh1368/SofiaWL</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/fahimeh1368/SofiaWL</RepositoryUrl>
     <PackageTags>git;</PackageTags>
     <Description>RelationalGit extracts valuable information about commits, blames, changes, devs, and pull requests out of git's data structure and imports them to a relational database such as Microsoft SQL Server. These data can be a ground for further source code mining analysis.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Version>2.0.1</Version>
+    <Version>2.0.3</Version>
+    <PackageId>SofiaWL</PackageId>
+    <ApplicationIcon />
+    <StartupObject />
+    <Win32Resource />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

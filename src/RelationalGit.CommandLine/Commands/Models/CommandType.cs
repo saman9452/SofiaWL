@@ -39,5 +39,7 @@
         public static string GetBlamesOfCommitedChanges => "get-committed-changes-blames";
 
         public static string AnalyzeSimulations => "analyze-simulations";
+
+        public static string GetWorkload => "get-workload";
     }
 }

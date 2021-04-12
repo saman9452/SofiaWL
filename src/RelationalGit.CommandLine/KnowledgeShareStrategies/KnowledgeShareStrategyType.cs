@@ -29,5 +29,7 @@ namespace RelationalGit.KnowledgeShareStrategies
         public static string WhoDoRec => "WhoDo";
 
         public static string SofiaWLRec => "SofiaWL";
+
+        public static string OwnerShipKnowledgeShare => "OwnerShip";
     }
 }

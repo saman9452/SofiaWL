@@ -151,6 +151,11 @@ namespace RelationalGit.Commands
                 var cmd = new AnalyzeSimulationsCommand(logger);
                 await cmd.Execute(options.ActualSimulationId, options.NoReviewsSimulationId,options.RecommenderSimulationId?.ToArray(),options.AnalyzeResultPath).ConfigureAwait(false);
             }
+            else if (options.Command.ToLower() == CommandType.GetWorkload)
+            {
+                var cmd = new GetOpenReviewCommand(logger);
+                await cmd.Execute(options.ActualSimulationId, options.AnalyzeResultPath, options.AnalyzeType).ConfigureAwait(false);
+            }
             else if (options.Command.ToLower() == CommandType.ComputeKnowledgeLoss)
             {
                 var cmd = new ShareKnowledgeCommand(logger);
