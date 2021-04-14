@@ -14,7 +14,7 @@ The overall steps are
 
 ## Get the Database
 
-1) Restore the backup of the data into MS Sql Server. For each studied project there is a separate database. You can select individual files from the [googledrive backup](https://drive.google.com/drive/folders/1nc7Hu7kbPpavYrCMmCU5SEBlLlZTo5Fv)
+1) Restore the backup of the data into MS Sql Server. For each studied project there is a separate database. You can select individual files from the [db backup](https://www.dropbox.com/sh/v21osjcu0z35d22/AADtCFqBSePV0ffUo7y7uzXba?dl=0). Note, some files are over 15GB.
 2) Copy the [configuration files](config).
 3) Open and modify each configuration file to set the connection string. You need to provide the server address along with the credentials. The following snippet shows a sample of how connection string should be set.
 
