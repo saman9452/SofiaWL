@@ -116,7 +116,7 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy sofia  --conf-p
 dotnet-rgit --cmd  get-workload --analyze-type <analyze-type> --analyze-result-path "path_to_result"  --reality-simulation <reality_id>  --conf-path <path_to_config_file>
 ```
 
-To calculate the actual review workload run [ActualWorkload.r](WorkloadMeasures/ActualWorkload.R). The data from the paper is available in [CSV](Data/Workload/Actual/) format.
+To calculate the actual review workload run [ActualWorkload.r](WorkloadMeasures/ActualWorkload.R). The data from the paper is available in [CSV](ResultsCSV/WorkloadAUC/Actual/) format.
 
 ### Simulation RQ5, Workload Aware: WhoDo is designed to be workload aware, but can it also balance Expertise, Workload, and FarR
 
@@ -150,7 +150,7 @@ Substitute the Id returned above for the recommender \<rec_sim_id\> and compare 
 dotnet-rgit --cmd analyze-simulations --analyze-result-path "path_to_result" --recommender-simulation <rec_sim_id> --reality-simulation <reality_id>  --conf-path <path_to_config_file>
 ```
 
-### Expertise and FAR results
+### Expertise and FAR results, and prior (ICSE) Workload measure results
 
 The tool creates four csv files, **expertise.csv**, **far.csv**, **workload.csv** and **auc.csv**  respectively. In the first three files, the first column shows the project's periods (quarters). Each column corresponds to one of the simulations. Each cell shows the percentage change between the actual outcome and the simulated outcome in that period. The last row of a column shows the median of its values. Note the **workload.csv** file is the prior workload measure used in the original ICSE version of the paper. The following table illustrates how a csv file of a project with 5 periods is formatted, assuming that only cHRev, TurnoverRec, and Sofia got compared with reality.
 
@@ -163,11 +163,9 @@ The tool creates four csv files, **expertise.csv**, **far.csv**, **workload.csv*
 | 5  | 10.10  | 60  | 35  | 34.78  |
 | Median  | 25.10  | 40  | 25  | 25  |
 
-In contrast, **auc.csv** shows the number of reviews of developers in each quarter and is used in the next step.
-
 **Note**: During simulations, for each pull request, one reviewer is randomly selected to be replaced by the top recommended reviewer. 
 
 ### AUC CDF of Review Workload 
 
-Once the output CSV files for workload are attained in the previous step, to calculate the AUC-based Workload measure run [WorkloadAUC.r](WorkloadMeasures/WorkloadAUC.R). The data from our simulations are in [CSV](Data/Workload/Simulated/).
+The file **auc.csv** from the prior step, shows the number of reviews of developers in each quarter. To calculate the AUC-based Workload measure run [WorkloadAUC.r](WorkloadMeasures/WorkloadAUC.R). The data from our simulations are in [CSV](ResultsCSV/WorkloadAUC/Simulated/).
 
