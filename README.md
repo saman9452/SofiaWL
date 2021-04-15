@@ -187,6 +187,7 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy NoReviews --con
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy Reality --conf-path $corefx_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy cHRev --conf-path $corefx_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy AuthorshipRec --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy OwnerShip --conf-path $corefx_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy RecOwnRec  --conf-path $corefx_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy RetentionRec  --conf-path $corefx_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy LearnRec  --conf-path $corefx_conf
