@@ -719,8 +719,9 @@ namespace RelationalGit.Calculation
                 {
                     dt.Columns.Add(openRevResult.LossSimulation.KnowledgeShareStrategyType + "-" + openRevResult.LossSimulation.Id, typeof(double));
                 }
-
-                var rows = openReviewResults.ElementAt(0).Results
+                var max = openReviewResults.Max(a => a.Results.Count());
+                var temp = openReviewResults.Where(a => a.Results.Count() == max).FirstOrDefault();
+                var rows = temp.Results
                     
                     .OrderBy(q => q)
                     .Select(q =>
@@ -733,9 +734,21 @@ namespace RelationalGit.Calculation
 
                 for (int j = 0; j < rows.Length - 1; j++)
                 {
+                    if (j == 1725)
+                    { var t = 5; }
+
                     for (int i = 0; i < openReviewResults.Count(); i++)
                     {
-                        rows[j][i] = openReviewResults.ElementAt(i).Results[j];
+                        if (openReviewResults.ElementAt(i).Results.Count()-1 > j)
+                        {
+                            rows[j][i] = openReviewResults.ElementAt(i).Results[j];
+                        }
+
+                        else
+                        {
+                            rows[j][i] = 0 ;
+                        }
+                       
                     }
                     dt.Rows.Add(rows[j]);
                 }
@@ -743,11 +756,13 @@ namespace RelationalGit.Calculation
                 for (int j = dt.Rows.Count - 1; j >= 0; j--)
                 {
                     var isRowConstant = IsRowConstant(dt.Rows[j]);
-
-                    if (isRowConstant)
+                  
+                  
+                    if (isRowConstant )
                     {
                         dt.Rows.RemoveAt(j);
                     }
+                   
                 }
 
                
@@ -766,6 +781,11 @@ namespace RelationalGit.Calculation
                     {
                         for (var i = 0; i < dt.Columns.Count; i++)
                         {
+                           if(row[i].ToString() == "0")
+                            {
+                                csv.WriteField(" ");
+                                i++;
+                            }
                             csv.WriteField(row[i]);
                         }
                         csv.NextRecord();
