@@ -585,7 +585,7 @@ namespace RelationalGit.Calculation
                 }
                 
             }
-            WriteOprnReviws(result, Path.Combine(path, "auc.csv"));
+            WriteOpenReviws(result, Path.Combine(path, "auc.csv"));
         }
 
         private static void CalculateTotalFaRRaw(long[] simulationsIds, string path)
@@ -710,7 +710,7 @@ namespace RelationalGit.Calculation
                 }
             }
         }
-        private static void WriteOprnReviws(IEnumerable<OpenReviewResult> openReviewResults, string path)
+        private static void WriteOpenReviws(IEnumerable<OpenReviewResult> openReviewResults, string path)
         {
             using (var dt = new DataTable())
             {
@@ -734,8 +734,7 @@ namespace RelationalGit.Calculation
 
                 for (int j = 0; j < rows.Length - 1; j++)
                 {
-                    if (j == 1725)
-                    { var t = 5; }
+                   
 
                     for (int i = 0; i < openReviewResults.Count(); i++)
                     {
@@ -746,7 +745,7 @@ namespace RelationalGit.Calculation
 
                         else
                         {
-                            rows[j][i] = 0 ;
+                            rows[j][i] = DBNull.Value;
                         }
                        
                     }
@@ -764,10 +763,6 @@ namespace RelationalGit.Calculation
                     }
                    
                 }
-
-               
-               
-
                 using (var writer = new StreamWriter(path))
                 using (var csv = new CsvWriter(writer))
                 {
@@ -781,15 +776,12 @@ namespace RelationalGit.Calculation
                     {
                         for (var i = 0; i < dt.Columns.Count; i++)
                         {
-                           if(row[i].ToString() == "0")
-                            {
-                                csv.WriteField(" ");
-                                i++;
-                            }
+                           
                             csv.WriteField(row[i]);
                         }
                         csv.NextRecord();
                     }
+                    
                 }
             }
         }
