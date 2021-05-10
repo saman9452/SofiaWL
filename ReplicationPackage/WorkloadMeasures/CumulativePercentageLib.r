@@ -2,6 +2,10 @@
 install.packages("MESS")
 library(MESS)
 
+percentage_difference <- function(a, s) {
+  ((s/a)-1) *100
+}
+
 percentage_percentage_freq <- function(x, decreasing = TRUE) {
   x <- na.omit(x)
   x <- sort(x, decreasing = decreasing)
