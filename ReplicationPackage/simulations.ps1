@@ -20,6 +20,9 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy RetentionRec  -
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy LearnRec  --conf-path $corefx_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy TurnoverRec --conf-path $corefx_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy Sofia  --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy SofiaWL  --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo --conf-path $corefx_conf
+
 
 
 # CoreCLR Simulations
@@ -32,6 +35,8 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy RetentionRec  -
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy LearnRec  --conf-path $coreclr_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy TurnoverRec --conf-path $coreclr_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy Sofia  --conf-path $coreclr_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy SofiaWL  --conf-path $coreclr_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo --conf-path $coreclr_conf
 
 
 # Roslyn Simulations
@@ -44,6 +49,8 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy RetentionRec  -
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy LearnRec  --conf-path $roslyn_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy TurnoverRec --conf-path $roslyn_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy Sofia  --conf-path $roslyn_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy SofiaWL  --conf-path $roslyn_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo --conf-path $roslyn_conf
 
 
 # Rust Simulations
@@ -56,6 +63,8 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy RetentionRec  -
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy LearnRec  --conf-path $rust_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy TurnoverRec --conf-path $rust_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy Sofia  --conf-path $rust_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy SofiaWL  --conf-path $rust_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo --conf-path $rust_conf
 
 
 # Kubernetes Simulations
@@ -68,3 +77,5 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy RetentionRec  -
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy LearnRec  --conf-path $kubernetes_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy TurnoverRec --conf-path $kubernetes_conf
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy Sofia  --conf-path $kubernetes_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy SofiaWL  --conf-path $kubernetes_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo --conf-path $kubernetes_conf

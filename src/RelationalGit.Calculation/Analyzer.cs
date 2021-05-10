@@ -585,7 +585,7 @@ namespace RelationalGit.Calculation
                 }
                 
             }
-            WriteOprnReviws(result, Path.Combine(path, "auc.csv"));
+            WriteOpenReviws(result, Path.Combine(path, "auc.csv"));
         }
 
         private static void CalculateTotalFaRRaw(long[] simulationsIds, string path)
@@ -710,7 +710,7 @@ namespace RelationalGit.Calculation
                 }
             }
         }
-        private static void WriteOprnReviws(IEnumerable<OpenReviewResult> openReviewResults, string path)
+        private static void WriteOpenReviws(IEnumerable<OpenReviewResult> openReviewResults, string path)
         {
             using (var dt = new DataTable())
             {
@@ -719,8 +719,9 @@ namespace RelationalGit.Calculation
                 {
                     dt.Columns.Add(openRevResult.LossSimulation.KnowledgeShareStrategyType + "-" + openRevResult.LossSimulation.Id, typeof(double));
                 }
-
-                var rows = openReviewResults.ElementAt(0).Results
+                var max = openReviewResults.Max(a => a.Results.Count());
+                var temp = openReviewResults.Where(a => a.Results.Count() == max).FirstOrDefault();
+                var rows = temp.Results
                     
                     .OrderBy(q => q)
                     .Select(q =>
@@ -733,9 +734,20 @@ namespace RelationalGit.Calculation
 
                 for (int j = 0; j < rows.Length - 1; j++)
                 {
+                   
+
                     for (int i = 0; i < openReviewResults.Count(); i++)
                     {
-                        rows[j][i] = openReviewResults.ElementAt(i).Results[j];
+                        if (openReviewResults.ElementAt(i).Results.Count()-1 > j)
+                        {
+                            rows[j][i] = openReviewResults.ElementAt(i).Results[j];
+                        }
+
+                        else
+                        {
+                            rows[j][i] = DBNull.Value;
+                        }
+                       
                     }
                     dt.Rows.Add(rows[j]);
                 }
@@ -743,16 +755,14 @@ namespace RelationalGit.Calculation
                 for (int j = dt.Rows.Count - 1; j >= 0; j--)
                 {
                     var isRowConstant = IsRowConstant(dt.Rows[j]);
-
-                    if (isRowConstant)
+                  
+                  
+                    if (isRowConstant )
                     {
                         dt.Rows.RemoveAt(j);
                     }
+                   
                 }
-
-               
-               
-
                 using (var writer = new StreamWriter(path))
                 using (var csv = new CsvWriter(writer))
                 {
@@ -766,10 +776,12 @@ namespace RelationalGit.Calculation
                     {
                         for (var i = 0; i < dt.Columns.Count; i++)
                         {
+                           
                             csv.WriteField(row[i]);
                         }
                         csv.NextRecord();
                     }
+                    
                 }
             }
         }
