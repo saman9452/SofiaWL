@@ -412,6 +412,10 @@ namespace RelationalGit.Calculation
 
                     foreach (var simulatedFaRPeriod in simulatedFaR)
                     {
+                        if(simulatedFaRPeriod.PeriodId == 8)
+                        {
+                            var t = 0;
+                        }
                         var actualValue = actualFaR.SingleOrDefault(q => q.PeriodId == simulatedFaRPeriod.PeriodId);
 
                         if (actualValue == null)
