@@ -66,6 +66,10 @@ namespace RelationalGit.KnowledgeShareStrategies
             {
                 return new SofiaWLRecommendationStrategy(knowledgeSaveReviewerReplacementType, logger, numberOfPeriodsForCalculatingProbabilityOfStay, pullRequestReviewerSelectionStrategy, addOnlyToUnsafePullrequests, recommenderOption, changePast);
             }
+            else if (recommendationStrategy == KnowledgeShareStrategyType.WhoDoWithCommit)
+            {
+                return new WhoDoWithCommitWorkShareStrategy(knowledgeSaveReviewerReplacementType, logger, numberOfPeriodsForCalculatingProbabilityOfStay, pullRequestReviewerSelectionStrategy, addOnlyToUnsafePullrequests, recommenderOption, changePast);
+            }
             else if (recommendationStrategy == KnowledgeShareStrategyType.OwnerShipKnowledgeShare)
             {
                 return new OwnerShipKnowledgeShareStrategy(knowledgeSaveReviewerReplacementType, logger, pullRequestReviewerSelectionStrategy, addOnlyToUnsafePullrequests, recommenderOption, changePast);

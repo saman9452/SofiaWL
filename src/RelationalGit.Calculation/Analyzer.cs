@@ -558,7 +558,9 @@ namespace RelationalGit.Calculation
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Parameters.AddWithValue("@simId", simulationId);
                     connection.Open();
+                    command.CommandTimeout = 0;
                     SqlDataReader reader = command.ExecuteReader();
+                    
                     try
                     {
                         while (reader.Read())

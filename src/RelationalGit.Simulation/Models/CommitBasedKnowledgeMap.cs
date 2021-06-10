@@ -100,7 +100,7 @@ namespace RelationalGit.Simulation
             }
         }
 
-        internal List<Commit> GetDeveloperCommits(string developerName)
+        public List<Commit> GetDeveloperCommits(string developerName)
         {
             if (_mapDeveloperCommit.ContainsKey(developerName))
             {

@@ -8,7 +8,7 @@ namespace RelationalGit.Simulation
 {
     public class ReviewBasedKnowledgeMap
     {
-        private readonly HashSet<long> _mapReviews = new HashSet<long>();
+        private readonly HashSet<string> _mapReviews = new HashSet<string>();
 
         private readonly Dictionary<string, List<PullRequest>> _mapDeveloperReview = new Dictionary<string, List<PullRequest>>();
 
@@ -74,18 +74,21 @@ namespace RelationalGit.Simulation
 
         private void UpdateDeveloperReviews(PullRequest pullRequest, string reviewerName)
         {
-            if (_mapReviews.Contains(pullRequest.Number))
+            if (_mapReviews.Contains(reviewerName + pullRequest.Number))
                 return;
 
-            _mapReviews.Add(pullRequest.Number);
+
+            _mapReviews.Add(reviewerName + pullRequest.Number);
 
             if (!_mapDeveloperReview.ContainsKey(reviewerName))
             {
                 _mapDeveloperReview[reviewerName] = new List<PullRequest>();
             }
+            if (!_mapDeveloperReview[reviewerName].Contains(pullRequest))
+                _mapDeveloperReview[reviewerName].Add(pullRequest);
 
-            _mapDeveloperReview[reviewerName].Add(pullRequest);
         }
+
 
         public Dictionary<string, DeveloperFileReveiewDetail> GetReviewsOfFile(string filePath)
         {

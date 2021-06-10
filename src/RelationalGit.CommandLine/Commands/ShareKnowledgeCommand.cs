@@ -62,7 +62,7 @@ namespace RelationalGit.Commands
                 _logger.LogInformation("{datetime}: Pull Requests Recommendation Results are saved Successfully.", DateTime.Now);
 
                 SaveOpenReviews(knowledgeDistributioneMap, lossSimulation);
-                _logger.LogInformation("{datetime}: Developer OpenReviews are saved successfully.", DateTime.Now);
+                //_logger.LogInformation("{datetime}: Developer OpenReviews are saved successfully.", DateTime.Now);
 
 
                 transaction.Commit();
@@ -292,45 +292,47 @@ namespace RelationalGit.Commands
 
             _dbContext.BulkInsert(bulkEntities, new BulkConfig { BatchSize = 50000});
         }
-        private void SaveOpenReviews(KnowledgeDistributionMap knowledgeMap, LossSimulation lossSimulation)
-        {
-     
-            var bulkDeveloperOpenReviews = new List<DeveloperReview>();
-            foreach (var pullRequestReviewerItem in knowledgeMap.PullRequestSimulatedRecommendationMap)
-            {
-                var pullRequest = _dbContext.PullRequests;
-                var pullRequestNumber = pullRequestReviewerItem.Key;
-                var pull = pullRequest.Where(a => a.Number == pullRequestNumber).FirstOrDefault();
-
-                var selectedReviewers = pullRequestReviewerItem.Value.SelectedReviewers;
-
-                foreach (var reviewer in selectedReviewers)
-                {
-                    var startDate = pull.CreatedAtDateTime ?? DateTime.MinValue;
-                    var endDate = pull.ClosedAtDateTime ?? DateTime.MinValue;
-                    var time = startDate;
-                    while (startDate < endDate)
-                    {
-
-                        bulkDeveloperOpenReviews.Add(new DeveloperReview()
-                        {
-                            NormalizedName = reviewer,
-                            DateTime = startDate,
-                            SimulationId = lossSimulation.Id,
-                            pullRequestId = pull.Number,
-
-                        });
-                        startDate = startDate.AddDays(1);
-                    }
-
-
-                }
-            }
-           var t =  _dbContext.DeveloperReviews.Where(a => a.Id == 4).ToArray();
-            _dbContext.BulkInsert(bulkDeveloperOpenReviews, new BulkConfig { BatchSize = 500000 });
-
-        }
        
+      
+        private void SaveOpenReviews(KnowledgeDistributionMap knowledgeMap, LossSimulation lossSimulation)
+            {
+            
+                var bulkDeveloperOpenReviews = new List<DeveloperReview>();
+                foreach (var pullRequestReviewerItem in knowledgeMap.PullRequestSimulatedRecommendationMap)
+                {
+                    var pullRequest = _dbContext.PullRequests;
+                    var pullRequestNumber = pullRequestReviewerItem.Key;
+                    var pull = pullRequest.Where(a => a.Number == pullRequestNumber).FirstOrDefault();
+
+                    var selectedReviewers = pullRequestReviewerItem.Value.SelectedReviewers;
+
+                    foreach (var reviewer in selectedReviewers)
+                    {
+                        var startDate = pull.CreatedAtDateTime ?? DateTime.MinValue;
+                        var endDate = pull.ClosedAtDateTime ?? DateTime.MinValue;
+                        var time = startDate;
+                        while (startDate < endDate)
+                        {
+
+                            bulkDeveloperOpenReviews.Add(new DeveloperReview()
+                            {
+                                NormalizedName = reviewer,
+                                DateTime = startDate,
+                                SimulationId = lossSimulation.Id,
+                                pullRequestId = pull.Number,
+
+                            });
+                            startDate = startDate.AddDays(1);
+                        }
+
+
+                    }
+                }
+                _dbContext.BulkInsert(bulkDeveloperOpenReviews, new BulkConfig { BatchSize = 500000 });
+
+            }
+      
+
         private void SavePullRequestReviewes(KnowledgeDistributionMap knowledgeMap, LossSimulation lossSimulation)
         {
             var bulkEntities = new List<RecommendedPullRequestReviewer>();
