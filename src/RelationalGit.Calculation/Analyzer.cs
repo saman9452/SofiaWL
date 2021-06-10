@@ -740,7 +740,10 @@ namespace RelationalGit.Calculation
 
                 for (int j = 0; j < rows.Length - 1; j++)
                 {
-                   
+                   if(j == 1034)
+                    {
+                        var t = 9;
+                    }
 
                     for (int i = 0; i < openReviewResults.Count(); i++)
                     {
@@ -758,17 +761,7 @@ namespace RelationalGit.Calculation
                     dt.Rows.Add(rows[j]);
                 }
 
-                for (int j = dt.Rows.Count - 1; j >= 0; j--)
-                {
-                    var isRowConstant = IsRowConstant(dt.Rows[j]);
-                  
-                  
-                    if (isRowConstant )
-                    {
-                        dt.Rows.RemoveAt(j);
-                    }
-                   
-                }
+                
                 using (var writer = new StreamWriter(path))
                 using (var csv = new CsvWriter(writer))
                 {
