@@ -13,9 +13,10 @@ namespace RelationalGit.Data
 
         public string NormalizedName { get; set; }
         public long SimulationId { get; set; }
-        public int pullRequestId { get; set; }
+        public int PullRequestId { get; set; }
         public DateTime DateTime { get; set; }
-
+        
+        public int CommitNumbers { get; set; }
 
     }
 }

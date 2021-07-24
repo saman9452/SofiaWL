@@ -412,10 +412,7 @@ namespace RelationalGit.Calculation
 
                     foreach (var simulatedFaRPeriod in simulatedFaR)
                     {
-                        if(simulatedFaRPeriod.PeriodId == 8)
-                        {
-                            var t = 0;
-                        }
+                        
                         var actualValue = actualFaR.SingleOrDefault(q => q.PeriodId == simulatedFaRPeriod.PeriodId);
 
                         if (actualValue == null)
@@ -551,7 +548,7 @@ namespace RelationalGit.Calculation
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     var queryString = $@"SELECT  NormalizedName,
-     count(distinct(pullRequestId))as pulls,
+     count(distinct(pullRequestId)) as pulls,
       DATEPART(QUARTER, DateTime) ,  DATEPART(year, Datetime)
   FROM [dbo].[DeveloperReviews] where SimulationId = @simId  Group by DATEPART(QUARTER, Datetime)  , NormalizedName,  DATEPART(year, Datetime)
   order by pulls desc";
@@ -740,10 +737,7 @@ namespace RelationalGit.Calculation
 
                 for (int j = 0; j < rows.Length - 1; j++)
                 {
-                   if(j == 1034)
-                    {
-                        var t = 9;
-                    }
+                   
 
                     for (int i = 0; i < openReviewResults.Count(); i++)
                     {

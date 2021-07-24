@@ -162,7 +162,17 @@ namespace RelationalGit.Simulation
             return ((developerTotalContribution.TotalReviews) + developerTotalContribution.TotalCommits)
                 / (double)((totalContribution.TotalReviews) + totalContribution.TotalCommits);
         }
-        
+        public double _GetEffort(string developer, int numberOfPeriodsForCalculatingProbabilityOfStay)
+        {
+            var lastmonth = PullRequest.CreatedAtDateTime.Value.Subtract(TimeSpan.FromDays(30));
+
+            var totalContribution = GetTotalContributionsBestweenPeriods(lastmonth, PullRequest.CreatedAtDateTime.Value);
+            var developerTotalContribution = GetDeveloperTotalContributionsBestweenPeriods(lastmonth, PullRequest.CreatedAtDateTime.Value, developer);
+
+            return ((developerTotalContribution.TotalReviews) + developerTotalContribution.TotalCommits)
+                / (double)((totalContribution.TotalReviews) + totalContribution.TotalCommits);
+        }
+
         private (int TotalReviews, int TotalCommits) GetDeveloperTotalContributionsBestweenPeriods(DateTime from, DateTime to, string developer)
         {
             var totalCommits = 0;
@@ -234,6 +244,24 @@ namespace RelationalGit.Simulation
             var numberOfContributedPeriodsSoFar = commitMonths.Union(reviewMonths).Count();
 
             return numberOfContributedPeriodsSoFar / (double) 12.0;
+        }
+
+        public double _GetProbabilityOfStay(string reviewer, int numberOfPeriodsForCalculatingProbabilityOfStay)
+        {
+            var currentPeriodId = PullRequestPeriod.Id;
+            var lastmonth = PullRequest.CreatedAtDateTime.Value.Subtract(TimeSpan.FromDays(30));
+
+            var commitMonths = KnowledgeMap.CommitBasedKnowledgeMap.GetDeveloperCommits(reviewer)
+                .Where(q => q.AuthorDateTime >= lastmonth)
+                .Select(q => q.AuthorDateTime.Day);
+
+            var reviewMonths = KnowledgeMap.ReviewBasedKnowledgeMap.GetDeveloperReviews(reviewer)
+                .Where(q => q.CreatedAtDateTime >= lastmonth)
+                .Select(q => q.CreatedAtDateTime.Value.Day);
+
+            var numberOfContributedPeriodsSoFar = commitMonths.Union(reviewMonths).Count();
+
+            return numberOfContributedPeriodsSoFar / (double)30.0;
         }
 
         private (int TotalReviews, int TotalCommits) GetTotalContributionsOfPeriod(long periodId)

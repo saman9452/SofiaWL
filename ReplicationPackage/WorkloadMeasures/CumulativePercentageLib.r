@@ -120,7 +120,7 @@ auc_difference_percentage_Simulated <- function(a, s) {
   r<-{}
  
   for (i in 1:length(s)){
-  r[i] <- c(auc_difference_percentage(a$Roslyn, s[col(s)==i]))
+  r[i] <- c(auc_difference_percentage(a[col(s)==i], s[col(s)==i]))
 }
   print(mean(r))
   
