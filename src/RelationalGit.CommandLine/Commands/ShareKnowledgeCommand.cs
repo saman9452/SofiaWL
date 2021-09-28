@@ -328,7 +328,7 @@ namespace RelationalGit.Commands
 
                     }
                 }
-                _dbContext.BulkInsert(bulkDeveloperOpenReviews, new BulkConfig { BatchSize = 500000 });
+                _dbContext.BulkInsert(bulkDeveloperOpenReviews, new BulkConfig { BatchSize = 5000000, BulkCopyTimeout=140000000});
 
             }
 

@@ -16,7 +16,7 @@ namespace RelationalGit.Data
         public int PullRequestId { get; set; }
         public DateTime DateTime { get; set; }
         
-        public int CommitNumbers { get; set; }
+        //public int CommitNumbers { get; set; }
 
     }
 }

@@ -157,25 +157,16 @@ namespace RelationalGit.Simulation
             var lastYear = PullRequest.CreatedAtDateTime.Value.Subtract(TimeSpan.FromDays(365));
 
             var totalContribution = GetTotalContributionsBestweenPeriods(lastYear, PullRequest.CreatedAtDateTime.Value);
-            var developerTotalContribution = GetDeveloperTotalContributionsBestweenPeriods(lastYear, PullRequest.CreatedAtDateTime.Value, developer);
-
-            return ((developerTotalContribution.TotalReviews) + developerTotalContribution.TotalCommits)
+            var developerTotalContribution = GetDeveloperTotalContributionsBestweenPeriods_(lastYear, PullRequest.CreatedAtDateTime.Value, developer);
+          
+                    return ((developerTotalContribution.TotalReviews?? 0) + developerTotalContribution.TotalCommits)
                 / (double)((totalContribution.TotalReviews) + totalContribution.TotalCommits);
         }
-        public double _GetEffort(string developer, int numberOfPeriodsForCalculatingProbabilityOfStay)
+       
+
+        private (double TotalReviews, double TotalCommits) GetDeveloperTotalContributionsBestweenPeriods(DateTime from, DateTime to, string developer)
         {
-            var lastmonth = PullRequest.CreatedAtDateTime.Value.Subtract(TimeSpan.FromDays(30));
-
-            var totalContribution = GetTotalContributionsBestweenPeriods(lastmonth, PullRequest.CreatedAtDateTime.Value);
-            var developerTotalContribution = GetDeveloperTotalContributionsBestweenPeriods(lastmonth, PullRequest.CreatedAtDateTime.Value, developer);
-
-            return ((developerTotalContribution.TotalReviews) + developerTotalContribution.TotalCommits)
-                / (double)((totalContribution.TotalReviews) + totalContribution.TotalCommits);
-        }
-
-        private (int TotalReviews, int TotalCommits) GetDeveloperTotalContributionsBestweenPeriods(DateTime from, DateTime to, string developer)
-        {
-            var totalCommits = 0;
+            var totalCommits = 0.0;
             var commits = KnowledgeMap.CommitBasedKnowledgeMap.GetDeveloperCommits(developer);
             var baselineCommit = new Commit() { AuthorDateTime = from };
             var index = commits.BinarySearch(baselineCommit,_commitComparer);
@@ -184,8 +175,9 @@ namespace RelationalGit.Simulation
                 index = ~index;
             totalCommits += commits.Count - index;
 
-            var totalReviews = 0;
+            double totalReviews = 0.0;
             var reviews = KnowledgeMap.ReviewBasedKnowledgeMap.GetDeveloperReviews(developer);
+          
             var baselinePullRequest = new PullRequest() { CreatedAtDateTime = from };
 
             index = reviews.BinarySearch(baselinePullRequest,_pullRequestComparer);
@@ -193,6 +185,120 @@ namespace RelationalGit.Simulation
             if (index < 0)
                 index = ~index;
             totalReviews += reviews.Count - index;
+
+
+            return (totalReviews, totalCommits);
+        }
+
+        private (double? TotalReviews, double TotalCommits) GetDeveloperTotalContributionsBestweenPeriods_(DateTime from, DateTime to, string developer)
+        {
+            var totalCommits = 0.0;
+            var commits = KnowledgeMap.CommitBasedKnowledgeMap.GetDeveloperCommits(developer);
+            var related_commits = commits.Where(a => a.AuthorDateTime >= from);
+            if (related_commits.Count() != 0)
+            {
+                var test = related_commits.GroupBy(x => new { x.AuthorDateTime.Year, x.AuthorDateTime.Month }).Select(q => new { key = q.Key, count = q.Count() }).ToArray();
+                var grouped_commit = related_commits.GroupBy(x => new { x.AuthorDateTime.Year, x.AuthorDateTime.Month }).Select(q => new { key = q.Key, count = q.Count() });
+                var max_date_month = related_commits.Max(a => a.AuthorDateTime).Month;
+                var max_year = related_commits.Max(a => a.AuthorDateTime).Year;
+                var min_year = related_commits.Min(a => a.AuthorDateTime).Year;
+
+                var i = max_date_month;
+                var months = grouped_commit.Select(a => a.key);
+                int[] priority_months = new int[14];
+                var index = 1;
+                for (int j = i; j > 1; j--)
+                {
+
+                    if (months.FirstOrDefault(a => a.Year == max_year & a.Month == j) != null)
+                    {
+                        priority_months[index] = grouped_commit.FirstOrDefault(a => a.key.Year == max_year & a.key.Month == j).count;
+
+                    }
+                    else
+                    {
+                        priority_months[index] = 0;
+                    }
+                    index++;
+                }
+                if (max_year != min_year)
+                {
+                    for (int l = 12; l >= i; l--)
+                    {
+                        if (months.FirstOrDefault(a => a.Year == min_year & a.Month == l) != null)
+                        {
+                            priority_months[index] = grouped_commit.FirstOrDefault(a => a.key.Year == min_year & a.key.Month == l).count;
+
+                        }
+                        else
+                        {
+                            priority_months[index] = 0;
+                        }
+                        index++;
+                    }
+                }
+
+                for (int p = 1; p < 13; p++)
+                {
+
+                    totalCommits += priority_months[p] / Math.Pow(Math.E, (p));
+                }
+            }
+
+
+            double? totalReviews = 0.0;
+            var reviews = KnowledgeMap.ReviewBasedKnowledgeMap.GetDeveloperReviews(developer);
+
+            var related_reviews = reviews.Where(a => a.CreatedAtDateTime >= from);
+            if (related_reviews.Count()  != 0)
+            {
+                var grouped_r = related_reviews.GroupBy(x => new { x.CreatedAtDateTime?.Year, x.CreatedAtDateTime?.Month }).ToArray();
+                var grouped_review = related_reviews.GroupBy(x => new { x.CreatedAtDateTime?.Year, x.CreatedAtDateTime?.Month }).Select(q => new { key = q.Key, count = q.Count() });
+                var max_date_month_review = related_reviews.Max(a => a.CreatedAtDateTime)?.Month;
+                var max_year_r = related_reviews.Max(a => a.CreatedAtDateTime)?.Year;
+                var min_year_r = related_reviews.Min(a => a.CreatedAtDateTime)?.Year;
+
+                var i_r = max_date_month_review ?? 0;
+                var months_r = grouped_r.Select(a => a.Key);
+                int[] priority_months_r = new int[14];
+                var index_r = 1;
+                for (int q = i_r; q >= 1; q--)
+                {
+
+                    if (months_r.FirstOrDefault(a => a.Year == max_year_r & a.Month == q) != null)
+                    {
+                        priority_months_r[index_r] = grouped_review.Where(a => a.key.Year == max_year_r & a.key.Month == q).FirstOrDefault().count;
+
+                    }
+                    else
+                    {
+                        priority_months_r[index_r] = 0;
+                    }
+                    index_r++;
+                }
+                if (max_year_r != min_year_r)
+                {
+                    for (int b = 12; b >= i_r; b--)
+                    {
+                        if (months_r.FirstOrDefault(a => a.Year == min_year_r & a.Month == b) != null)
+                        {
+                            priority_months_r[index_r] = grouped_review.Where(a => a.key.Month == b & a.key.Year == min_year_r).FirstOrDefault().count;
+
+                        }
+                        else
+                        {
+                            priority_months_r[index_r] = 0;
+                        }
+                        index_r++;
+                    }
+                }
+                for (int k = 1; k < 13; k++)
+                {
+
+                    totalReviews += priority_months_r[k] / Math.Pow(Math.E, (k));
+                }
+
+            }
 
             return (totalReviews, totalCommits);
         }
