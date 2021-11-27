@@ -41,12 +41,12 @@ namespace RelationalGit.Recommendation
                 return score;
             }
 
-
+            score = reviewerCommits;
             if (reviewer_recency != DateTime.MinValue)
             {
                 var diff_review = (nowTime - reviewer_recency).TotalDays == 0 ? 1 : (nowTime - reviewer_recency).TotalDays;
 
-                score = reviewerCommits / diff_review;
+                score = score / diff_review;
             }
             return score;
         }
@@ -64,13 +64,13 @@ namespace RelationalGit.Recommendation
             {
                 return score;
             }
-
+            score = reviewNumber;
             var recency = data.Values.FirstOrDefault();
 
             if (recency != DateTime.MinValue)
             {
                 var diff_review = (nowTime - recency).TotalDays == 0 ? 1 : (nowTime - recency).TotalDays;
-                score = reviewNumber / diff_review;
+                score = score / diff_review;
             }
             return score;
         }

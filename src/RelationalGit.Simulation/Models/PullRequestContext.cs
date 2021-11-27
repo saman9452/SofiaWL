@@ -53,6 +53,7 @@ namespace RelationalGit.Simulation
 
         public List<long> Overlap { get; set; }
 
+       
         public bool PullRequestFilesAreSafe
         {
             get
@@ -128,7 +129,67 @@ namespace RelationalGit.Simulation
                 _isSafe = true;
             }
         }
+        public int PullRequestHasLeaver()
+        {
+            int result = 0;
+            using (var dbcontex = new GitRepositoryDbContext(false))
+            {
+                var three_week = PullRequest.CreatedAtDateTime.Value.AddDays(21);
+                var developers = dbcontex.Developers.ToList();
+                var author = developers.FirstOrDefault(a => a.NormalizedName == PRSubmitterNormalizedName);
+                if (author == null)
+                {
+                    author = developers.FirstOrDefault(a => a.NormalizedName == PullRequest.UserLogin);
+                }
+                var actuals = ActualReviewers.Select(a => a.DeveloperName);
+                var actual_reviewers = developers.Where(a => actuals.Contains(a.NormalizedName)).ToList();
+                if (author != null)
+                {
+                    var lastcontAuthor = GetLastContribution(author);
+                    if (lastcontAuthor != null)
+                    {
+                        if (lastcontAuthor < three_week)
+                            result++;
+                    }
+                }
 
+                if (author == null)
+                {
+                    var tt = 0;
+                }
+                for (int i = 0; i < actual_reviewers.Count(); i++)
+                {
+                    if (actual_reviewers[i] == null)
+                    {
+                        var y = 9;
+                    }
+                    var lastcontreviewer = GetLastContribution(actual_reviewers[i]);
+                    if (lastcontreviewer < three_week)
+                        result++;
+                }
+            }
+
+            return result;
+        }
+        public DateTime? GetLastContribution(Developer developer)
+        {
+            if (developer.LastCommitDateTime == null)
+            {
+                return developer.LastReviewDateTime;
+            }
+            if (developer.LastReviewDateTime == null)
+            {
+                return developer.LastCommitDateTime;
+            }
+            if (developer.LastCommitDateTime < developer.LastReviewDateTime)
+            {
+                return developer.LastReviewDateTime;
+            }
+            else
+            {
+                return developer.LastCommitDateTime;
+            }
+        }
         public string[] GetRiskyFiles(int riskOwnershipTreshold)
         {
             if (Hoarders == null)
@@ -155,11 +216,11 @@ namespace RelationalGit.Simulation
         public double GetEffort(string developer, int numberOfPeriodsForCalculatingProbabilityOfStay)
         {
             var lastYear = PullRequest.CreatedAtDateTime.Value.Subtract(TimeSpan.FromDays(365));
-
+            //var lastMonth= PullRequest.CreatedAtDateTime.Value.Subtract(TimeSpan.FromDays(30));
             var totalContribution = GetTotalContributionsBestweenPeriods(lastYear, PullRequest.CreatedAtDateTime.Value);
-            var developerTotalContribution = GetDeveloperTotalContributionsBestweenPeriods_(lastYear, PullRequest.CreatedAtDateTime.Value, developer);
+            var developerTotalContribution = GetDeveloperTotalContributionsBestweenPeriods(lastYear, PullRequest.CreatedAtDateTime.Value, developer);
           
-                    return ((developerTotalContribution.TotalReviews?? 0) + developerTotalContribution.TotalCommits)
+                    return ((developerTotalContribution.TotalReviews) + developerTotalContribution.TotalCommits)
                 / (double)((totalContribution.TotalReviews) + totalContribution.TotalCommits);
         }
        

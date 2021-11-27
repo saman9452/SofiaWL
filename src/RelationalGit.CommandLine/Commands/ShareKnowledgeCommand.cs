@@ -62,8 +62,8 @@ namespace RelationalGit.Commands
                 _logger.LogInformation("{datetime}: Pull Requests Recommendation Results are saved Successfully.", DateTime.Now);
 
                 SaveOpenReviews(knowledgeDistributioneMap, lossSimulation);
-                //_logger.LogInformation("{datetime}: Developer OpenReviews are saved successfully.", DateTime.Now);
-
+                _logger.LogInformation("{datetime}: Developer OpenReviews are saved successfully.", DateTime.Now);
+                SaveLearnerReviews(knowledgeDistributioneMap, lossSimulation);
 
                 transaction.Commit();
                 _logger.LogInformation("{datetime}: Transaction is committed.", DateTime.Now);
@@ -332,11 +332,10 @@ namespace RelationalGit.Commands
 
             }
 
-
-       /* private void SaveOpenReviews(KnowledgeDistributionMap knowledgeMap, LossSimulation lossSimulation)
+        private void SaveLearnerReviews(KnowledgeDistributionMap knowledgeMap, LossSimulation lossSimulation)
         {
 
-            var bulkDeveloperOpenReviews = new List<DeveloperReview>();
+            var bulkLearnerReviews = new List<LearnerReviewer>();
             foreach (var pullRequestReviewerItem in knowledgeMap.PullRequestSimulatedRecommendationMap)
             {
                 var pullRequest = _dbContext.PullRequests;
@@ -344,8 +343,9 @@ namespace RelationalGit.Commands
                 var pull = pullRequest.Where(a => a.Number == pullRequestNumber).FirstOrDefault();
 
                 var selectedReviewers = pullRequestReviewerItem.Value.SelectedReviewers;
-
-                foreach (var reviewer in selectedReviewers)
+                var actual = pullRequestReviewerItem.Value.ActualReviewers;
+                var learners = selectedReviewers.Where(a => !actual.Contains(a));
+                foreach (var reviewer in learners)
                 {
                     var startDate = pull.CreatedAtDateTime ?? DateTime.MinValue;
                     var endDate = pull.ClosedAtDateTime ?? DateTime.MinValue;
@@ -354,18 +354,18 @@ namespace RelationalGit.Commands
                     {
                         var count = 0;
                         var commits = _dbContext.Commits.Where(a => a.NormalizedAuthorName == reviewer && a.AuthorDateTime.Year == startDate.Year && a.AuthorDateTime.Month == startDate.Month && a.AuthorDateTime.Day == startDate.Day);
-                        var before = bulkDeveloperOpenReviews.Where(a => a.NormalizedName == reviewer && a.DateTime.Year == startDate.Year && a.DateTime.Month == startDate.Month && a.DateTime.Day == startDate.Day).FirstOrDefault();
+                        var before = bulkLearnerReviews.Where(a => a.NormalizedName == reviewer && a.DateTime.Year == startDate.Year && a.DateTime.Month == startDate.Month && a.DateTime.Day == startDate.Day).FirstOrDefault();
                         if (commits != null && before == null)
                         {
                             count = commits.Count();
                         }
-                        bulkDeveloperOpenReviews.Add(new DeveloperReview()
+                        bulkLearnerReviews.Add(new LearnerReviewer()
                         {
                             NormalizedName = reviewer,
                             DateTime = startDate,
                             SimulationId = lossSimulation.Id,
                             PullRequestId = pull.Number,
-                            CommitNumbers = count,
+
                         });
                         startDate = startDate.AddDays(1);
                     }
@@ -373,9 +373,53 @@ namespace RelationalGit.Commands
 
                 }
             }
-            _dbContext.BulkInsert(bulkDeveloperOpenReviews, new BulkConfig { BatchSize = 500000 });
+            _dbContext.BulkInsert(bulkLearnerReviews, new BulkConfig { BatchSize = 500000 });
 
-        }*/
+        }
+
+        /* private void SaveOpenReviews(KnowledgeDistributionMap knowledgeMap, LossSimulation lossSimulation)
+         {
+
+             var bulkDeveloperOpenReviews = new List<DeveloperReview>();
+             foreach (var pullRequestReviewerItem in knowledgeMap.PullRequestSimulatedRecommendationMap)
+             {
+                 var pullRequest = _dbContext.PullRequests;
+                 var pullRequestNumber = pullRequestReviewerItem.Key;
+                 var pull = pullRequest.Where(a => a.Number == pullRequestNumber).FirstOrDefault();
+
+                 var selectedReviewers = pullRequestReviewerItem.Value.SelectedReviewers;
+
+                 foreach (var reviewer in selectedReviewers)
+                 {
+                     var startDate = pull.CreatedAtDateTime ?? DateTime.MinValue;
+                     var endDate = pull.ClosedAtDateTime ?? DateTime.MinValue;
+                     var time = startDate;
+                     while (startDate < endDate)
+                     {
+                         var count = 0;
+                         var commits = _dbContext.Commits.Where(a => a.NormalizedAuthorName == reviewer && a.AuthorDateTime.Year == startDate.Year && a.AuthorDateTime.Month == startDate.Month && a.AuthorDateTime.Day == startDate.Day);
+                         var before = bulkDeveloperOpenReviews.Where(a => a.NormalizedName == reviewer && a.DateTime.Year == startDate.Year && a.DateTime.Month == startDate.Month && a.DateTime.Day == startDate.Day).FirstOrDefault();
+                         if (commits != null && before == null)
+                         {
+                             count = commits.Count();
+                         }
+                         bulkDeveloperOpenReviews.Add(new DeveloperReview()
+                         {
+                             NormalizedName = reviewer,
+                             DateTime = startDate,
+                             SimulationId = lossSimulation.Id,
+                             PullRequestId = pull.Number,
+                             CommitNumbers = count,
+                         });
+                         startDate = startDate.AddDays(1);
+                     }
+
+
+                 }
+             }
+             _dbContext.BulkInsert(bulkDeveloperOpenReviews, new BulkConfig { BatchSize = 500000 });
+
+         }*/
 
 
         private void SavePullRequestReviewes(KnowledgeDistributionMap knowledgeMap, LossSimulation lossSimulation)
