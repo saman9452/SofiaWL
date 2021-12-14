@@ -130,8 +130,7 @@ namespace RelationalGit.Data
         public DbQuery<ReviewersParticipationDateTimeQuery> ReviewersParticipationDateTimeQuery { get; set; }
 
         public DbSet<DeveloperReview> DeveloperReviews { get; set; }
-        public DbSet<LearnerReviewer> LearnerReviewers { get; set; }
-        public DbSet<AffectedLeaverFile> AffectedLeaverFiles { get; set; }
+      
         public Dictionary<string, string> GetCanonicalPaths()
         {
             var canonicalResults = this.CommittedChanges.Select(m => new { m.CanonicalPath, m.Path })

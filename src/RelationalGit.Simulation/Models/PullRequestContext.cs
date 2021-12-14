@@ -129,48 +129,7 @@ namespace RelationalGit.Simulation
                 _isSafe = true;
             }
         }
-        public int PullRequestHasLeaver()
-        {
-            int result = 0;
-            using (var dbcontex = new GitRepositoryDbContext(false))
-            {
-                var three_week = PullRequest.CreatedAtDateTime.Value.AddDays(21);
-                var developers = dbcontex.Developers.ToList();
-                var author = developers.FirstOrDefault(a => a.NormalizedName == PRSubmitterNormalizedName);
-                if (author == null)
-                {
-                    author = developers.FirstOrDefault(a => a.NormalizedName == PullRequest.UserLogin);
-                }
-                var actuals = ActualReviewers.Select(a => a.DeveloperName);
-                var actual_reviewers = developers.Where(a => actuals.Contains(a.NormalizedName)).ToList();
-                if (author != null)
-                {
-                    var lastcontAuthor = GetLastContribution(author);
-                    if (lastcontAuthor != null)
-                    {
-                        if (lastcontAuthor < three_week)
-                            result++;
-                    }
-                }
-
-                if (author == null)
-                {
-                    var tt = 0;
-                }
-                for (int i = 0; i < actual_reviewers.Count(); i++)
-                {
-                    if (actual_reviewers[i] == null)
-                    {
-                        var y = 9;
-                    }
-                    var lastcontreviewer = GetLastContribution(actual_reviewers[i]);
-                    if (lastcontreviewer < three_week)
-                        result++;
-                }
-            }
-
-            return result;
-        }
+      
         public DateTime? GetLastContribution(Developer developer)
         {
             if (developer.LastCommitDateTime == null)
@@ -218,16 +177,16 @@ namespace RelationalGit.Simulation
             var lastYear = PullRequest.CreatedAtDateTime.Value.Subtract(TimeSpan.FromDays(365));
             //var lastMonth= PullRequest.CreatedAtDateTime.Value.Subtract(TimeSpan.FromDays(30));
             var totalContribution = GetTotalContributionsBestweenPeriods(lastYear, PullRequest.CreatedAtDateTime.Value);
-            var developerTotalContribution = GetDeveloperTotalContributionsBestweenPeriods_(lastYear, PullRequest.CreatedAtDateTime.Value, developer);
+            var developerTotalContribution = GetDeveloperTotalContributionsBestweenPeriods(lastYear, PullRequest.CreatedAtDateTime.Value, developer);
           
-                    return ((developerTotalContribution.TotalReviews??0) + developerTotalContribution.TotalCommits)
+                    return ((developerTotalContribution.TotalReviews) + developerTotalContribution.TotalCommits)
                 / (double)((totalContribution.TotalReviews) + totalContribution.TotalCommits);
         }
        
 
-        private (double TotalReviews, double TotalCommits) GetDeveloperTotalContributionsBestweenPeriods(DateTime from, DateTime to, string developer)
+        private (int TotalReviews, int TotalCommits) GetDeveloperTotalContributionsBestweenPeriods(DateTime from, DateTime to, string developer)
         {
-            var totalCommits = 0.0;
+            var totalCommits = 0;
             var commits = KnowledgeMap.CommitBasedKnowledgeMap.GetDeveloperCommits(developer);
             var baselineCommit = new Commit() { AuthorDateTime = from };
             var index = commits.BinarySearch(baselineCommit,_commitComparer);
@@ -236,7 +195,7 @@ namespace RelationalGit.Simulation
                 index = ~index;
             totalCommits += commits.Count - index;
 
-            double totalReviews = 0.0;
+            int totalReviews = 0;
             var reviews = KnowledgeMap.ReviewBasedKnowledgeMap.GetDeveloperReviews(developer);
           
             var baselinePullRequest = new PullRequest() { CreatedAtDateTime = from };
@@ -251,7 +210,7 @@ namespace RelationalGit.Simulation
             return (totalReviews, totalCommits);
         }
 
-        private (double? TotalReviews, double TotalCommits) GetDeveloperTotalContributionsBestweenPeriods_(DateTime from, DateTime to, string developer)
+        /*private (double? TotalReviews, double TotalCommits) GetDeveloperTotalContributionsBestweenPeriods_(DateTime from, DateTime to, string developer)
         {
             var totalCommits = 0.0;
             var commits = KnowledgeMap.CommitBasedKnowledgeMap.GetDeveloperCommits(developer);
@@ -362,7 +321,7 @@ namespace RelationalGit.Simulation
             }
 
             return (totalReviews, totalCommits);
-        }
+        }*/
 
         private (int TotalReviews, int TotalCommits) GetTotalContributionsBestweenPeriods(DateTime from, DateTime to)
         {
