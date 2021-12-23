@@ -116,7 +116,7 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy sofia  --conf-p
 dotnet-rgit --cmd  get-workload --analyze-type <analyze-type> --analyze-result-path "path_to_result"  --reality-simulation <reality_id>  --conf-path <path_to_config_file>
 ```
 
-To calculate the actual review workload run [ActualWorkload.r](WorkloadMeasures/ActualWorkload.R). The data from the paper is available in [CSV](ResultsCSV/WorkloadAUC/Actual/) format.
+To calculate the Gini of the actual review workload run [ActualWorkload.r](WorkloadMeasures/ActualWorkload.R). The data from the paper is available in [CSV](ResultsCSV/WorkloadAUC/Actual/) format.
 
 ### Simulation RQ5, Workload Aware: WhoDo is designed to be workload aware, but can it also balance Expertise, Workload, and FarR
 
@@ -152,7 +152,7 @@ dotnet-rgit --cmd analyze-simulations --analyze-result-path "path_to_result" --r
 
 ### Expertise and FAR results, and prior (ICSE) Workload measure results
 
-The tool creates four csv files, **expertise.csv**, **far.csv**, **workload.csv** and **auc.csv**  respectively. In the first three files, the first column shows the project's periods (quarters). Each column corresponds to one of the simulations. Each cell shows the percentage change between the actual outcome and the simulated outcome in that period. The last row of a column shows the median of its values. Note the **workload.csv** file is the prior workload measure used in the original ICSE version of the paper. The following table illustrates how a csv file of a project with 5 periods is formatted, assuming that only cHRev, TurnoverRec, and Sofia got compared with reality.
+The tool creates four csv files, **expertise.csv**, **far.csv**, **workload.csv** and **auc.csv**  respectively. In the first three files, the first column shows the project's periods (quarters). Each column corresponds to one of the simulations. Each cell shows the percentage change between the actual outcome and the simulated outcome in that period. The last row of a column shows the median of its values. Note the **workload.csv** file is the prior workload measure used in the original ICSE version of the paper. The following table illustrates how a csv file of a project with 5 periods is formatted, assuming that only cHRev, TurnoverRec, and Sofia got compared with reality. For completeness we also show the top ten workload with the new outcomes [here](https://docs.google.com/spreadsheets/d/1CXXAPims3Zjs5zeDnFH80Gz3sq_GmYOYVpGt3p0oIP4/edit?usp=sharing)
 
 | Periods       | cHRev         | cHRev         | TurnoverRec   | Sofia         |
 | ------------- | ------------- | ------------- | ------------- |-------------- |
@@ -165,7 +165,13 @@ The tool creates four csv files, **expertise.csv**, **far.csv**, **workload.csv*
 
 **Note**: During simulations, for each pull request, one reviewer is randomly selected to be replaced by the top recommended reviewer. 
 
-### AUC CDF of Review Workload 
+### Gini AUC CDF of Review Workload 
 
-The file **auc.csv** from the prior step, shows the number of reviews of developers in each quarter. To calculate the AUC-based Workload measure run [WorkloadAUC.r](WorkloadMeasures/WorkloadAUC.R). The data from our simulations are in [CSV](ResultsCSV/WorkloadAUC/Simulated/).
+The file **auc.csv** from the prior step, shows the number of reviews of developers in each quarter. To calculate the Gini AUC-based Workload measure run [WorkloadAUC.r](WorkloadMeasures/WorkloadAUC.R). The data from our simulations are in [CSV](ResultsCSV/WorkloadAUC/Simulated/).
 
+### Exponential weighting for RetetionRec 
+
+TODO: add the table from response and commit code
+
+### Sensitivity analysis for k in Sofia
+TODO: add results and commit the code
