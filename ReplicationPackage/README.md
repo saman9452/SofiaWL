@@ -172,8 +172,8 @@ The file **auc.csv** from the prior step, shows the number of reviews of develop
 ### Exponential weighting for RetetionRec 
 We changed Contribution of developers from Yearly to the weighted one and value recent contribution more and the code for this part is in [commit](https://github.com/fahimeh1368/SofiaWL/commit/f452397e939eeb88dc3bbc7007115a190e004eb8) but the results was not as good as RetentionRec which is shown below.
 
-| Expertise       | FaR         | Gini        |
-| ------------- | ------------- | ------------- |
+|Project         | Expertise       | FaR         | Gini        |
+| ------------- | ------------- | ------------- |-------------|
 | CoreFX  | 12.93  | -24.25 | 9  |
 | CoreCLR  | 10.78  | -12.88  | 16.57  |
 | Roslyn | 14.70  |-17.94  | 11.63  | 
