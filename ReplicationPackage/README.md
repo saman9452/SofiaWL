@@ -182,5 +182,5 @@ We changed Contribution of developers from Yearly to the weighted one and value 
 | Average  | 14.15  | -15.24  | 11.78  |
 
 
-### Sensitivity analysis for k in Sofia
-TODO: add results and commit the code
+### Sensitivity analysis for k in SofiaV2
+We change the line of the config file manually which is "RecommenderOption": "alpha-1,beta-1,risk-3,hoarder_ratio-1", To change k for Risky files. In this line risk-number shows the k+1. It means that if we have risk-3 files that have less than 2 developer are considered risky. The results of sensitive analysis exists in [here](https://docs.google.com/spreadsheets/d/1CXXAPims3Zjs5zeDnFH80Gz3sq_GmYOYVpGt3p0oIP4/edit#gid=1577563518) 
