@@ -170,8 +170,17 @@ The tool creates four csv files, **expertise.csv**, **far.csv**, **workload.csv*
 The file **auc.csv** from the prior step, shows the number of reviews of developers in each quarter. To calculate the Gini AUC-based Workload measure run [WorkloadAUC.r](WorkloadMeasures/WorkloadAUC.R). The data from our simulations are in [CSV](ResultsCSV/WorkloadAUC/Simulated/).
 
 ### Exponential weighting for RetetionRec 
+We changed Contribution of developers from Yearly to the weighted one and value recent contribution more and the code for this part is in [commit](https://github.com/fahimeh1368/SofiaWL/commit/f452397e939eeb88dc3bbc7007115a190e004eb8) but the results was not as good as RetentionRec which is shown below.
 
-TODO: add the table from response and commit code
+|Project         | Expertise       | FaR         | Gini        |
+| ------------- | ------------- | ------------- |-------------|
+| CoreFX  | 12.93  | -24.25 | 9  |
+| CoreCLR  | 10.78  | -12.88  | 16.57  |
+| Roslyn | 14.70  |-17.94  | 11.63  | 
+| Rust  | 12.68  | -4.73  | 11.5  | 90  |
+| Kubernetes  | 19.68  | -16.43  | 9.72  |
+| Average  | 14.15  | -15.24  | 11.78  |
 
-### Sensitivity analysis for k in Sofia
-TODO: add results and commit the code
+
+### Sensitivity analysis for k in SofiaV2
+We change the line of the config file manually which is "RecommenderOption": "alpha-1,beta-1,risk-3,hoarder_ratio-1", To change k for Risky files. In this line risk-number shows the k+1. It means that if we have risk-3 files that have less than 2 developer are considered risky. The results of sensitive analysis exists in [here](https://docs.google.com/spreadsheets/d/1CXXAPims3Zjs5zeDnFH80Gz3sq_GmYOYVpGt3p0oIP4/edit#gid=1577563518) 
