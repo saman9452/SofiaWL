@@ -184,7 +184,7 @@ namespace RelationalGit.Simulation
         }
        
 
-        /*private (int TotalReviews, int TotalCommits) GetDeveloperTotalContributionsBestweenPeriods(DateTime from, DateTime to, string developer)
+        private (int TotalReviews, int TotalCommits) GetDeveloperTotalContributionsBestweenPeriods(DateTime from, DateTime to, string developer)
         {
             var totalCommits = 0;
             var commits = KnowledgeMap.CommitBasedKnowledgeMap.GetDeveloperCommits(developer);
@@ -321,7 +321,7 @@ namespace RelationalGit.Simulation
             }
 
             return (totalReviews, totalCommits);
-        }*/
+        }
 
         private (int TotalReviews, int TotalCommits) GetTotalContributionsBestweenPeriods(DateTime from, DateTime to)
         {
