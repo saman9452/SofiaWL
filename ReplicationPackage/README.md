@@ -78,7 +78,13 @@ Using the Id returned from above, compare the knowlege loss with and without con
 ```PowerShell
 dotnet-rgit --cmd analyze-simulations --analyze-result-path "path_to_result" --no-reviews-simulation <no_reviews_sim_id> --reality-simulation <reality_sim_id>  --conf-path <path_to_config_file>
 ```
+In order to get Mean Reciprocal Rank (MRR), log into the database and run
 
+```SQL
+-- Get MRR using the Id of simulation
+select AVG([MeanReciprocalRank])
+  from PullRequestRecommendationResults where LossSimulationId = Id
+```
 ---
 
 ### Simulation RQ2, Ownership Aware: Does recommending reviewers based on code and review file ownership reduce the number of files at risk to turnover?
@@ -145,6 +151,8 @@ select Id, KnowledgeShareStrategyType, StartDateTime from LossSimulations
 ```
 
 Substitute the Id returned above for the recommender \<rec_sim_id\> and compare the recommenders with the actual values, \<reality_id>.
+
+before running the following command, modify relationalgit.json file and set the Database value in "ConnectionStrings" to the database name. If this step is skiped, the **auc.csv** will be created but it will be empty.
 
 ```PowerShell
 dotnet-rgit --cmd analyze-simulations --analyze-result-path "path_to_result" --recommender-simulation <rec_sim_id> --reality-simulation <reality_id>  --conf-path <path_to_config_file>
