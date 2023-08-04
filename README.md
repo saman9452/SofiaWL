@@ -183,16 +183,16 @@ dotnet-rgit --cmd extract-dev-info
 # Run the Simulations
 
 ```PowerShell
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy NoReviews --conf-path $corefx_conf
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy Reality --conf-path $corefx_conf
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy cHRev --conf-path $corefx_conf
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy AuthorshipRec --conf-path $corefx_conf
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy RecOwnRec  --conf-path $corefx_conf
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy RetentionRec  --conf-path $corefx_conf
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy LearnRec  --conf-path $corefx_conf
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy TurnoverRec --conf-path $corefx_conf
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy Sofia  --conf-path $corefx_conf
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo  --conf-path $corefx_conf
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy SofiaWL  --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy NoReviews --simulation-type "Random" --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy Reality --simulation-type "Random" --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy cHRev --simulation-type "Random" --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy AuthorshipRec --simulation-type "SeededRandom" --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy RecOwnRec --simulation-type "SeededRandom" --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy RetentionRec --simulation-type "SeededRandom" --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy LearnRec --simulation-type "SeededRandom" --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy TurnoverRec --simulation-type "SeededRandom" --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy Sofia --simulation-type "SeededRandom" --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo --simulation-type "SeededRandom" --conf-path $corefx_conf
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy SofiaWL --simulation-type "SeededRandom" --conf-path $corefx_conf
 
 ```
