@@ -51,7 +51,8 @@ $kubernetes_conf = "absolute/path/to/kubernetes_conf.json"
 This script runs all the defined reviewer recommendation algorithms across all projects. Each run is called a simulation because for each pull request, one of the actual reviewers is randomly selected to be replaced by the top recommended reviewer.
 
 **Note**: Make sure you have set the PowerShell [execution policy](https://superuser.com/questions/106360/how-to-enable-execution-of-powershell-scripts) to **Unrestricted** or **RemoteAssigned**.
-**Note**: For performance comparision purposes we only choose reviewers to be replaced randomly for chRev. for the other algorithms, we use the same reviewers to remove the randomness of results. The way to do this is by choosing "Random" value for the command when running simulations for chRev and "SeededRandom" value for all the other algorithms.
+
+**Note**: For performance comparision purposes we only choose reviewers to be replaced randomly for chRev. for the other algorithms, we use the same reviewers to remove the randomness of results. The way to do this is by choosing **"Random"** value for the command when running simulations for chRev and **"SeededRandom"** value for all the other algorithms.
 
 ## Research Questions
 
