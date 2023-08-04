@@ -48,13 +48,14 @@ $kubernetes_conf = "absolute/path/to/kubernetes_conf.json"
 ./simulations.ps1
 ```
 
-This scripts runs all the defined reviewer recommendation algorithms accross all projects. Each run is called a simulation because for each pull request one of the actual reviewers is randomly selected to be replaced by the top recommended reviewer.
+This script runs all the defined reviewer recommendation algorithms across all projects. Each run is called a simulation because for each pull request, one of the actual reviewers is randomly selected to be replaced by the top recommended reviewer.
 
 **Note**: Make sure you have set the PowerShell [execution policy](https://superuser.com/questions/106360/how-to-enable-execution-of-powershell-scripts) to **Unrestricted** or **RemoteAssigned**.
+**Note**: For performance comparision purposes we only choose reviewers to be replaced randomly for chRev. for the other algorithms, we use the same reviewers to remove the randomness of results. The way to do this is by choosing "Random" value for the command when running simulations for chRev and "SeededRandom" value for all the other algorithms.
 
 ## Research Questions
 
-In following sections, we show which simulations are used for which research questions. For each simulation, a sample is provided that illustrates how the simulation can be run using the tool.
+In the following sections, we show which simulations are used for which research questions. For each simulation, a sample is provided that illustrates how the simulation can be run using the tool.
 
 ### Empirical RQ1, Review and Turnover: What is the reduction in files at risk to turnover when both authors and reviewers are considered knowledgeable?
 
@@ -62,7 +63,7 @@ In following sections, we show which simulations are used for which research que
 ```PowerShell
 # committers only
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy NoReviews --conf-path <path_to_config_file>
-# committers + reviewers = what happended in "Reality"
+# committers + reviewers = what happened in "Reality"
 dotnet-rgit --cmd simulate-recommender --recommendation-strategy Reality --conf-path <path_to_config_file>
 ```
 
@@ -73,7 +74,7 @@ Log into the database and run
 select Id, KnowledgeShareStrategyType, StartDateTime from LossSimulations
 ```
 
-Using the Id returned from above, compare the knowlege loss with and without considering reviewers knowledgable run the following: 
+Using the Id returned from above, compare the knowledge loss with and without considering reviewers knowledgable run the following: 
 
 ```PowerShell
 dotnet-rgit --cmd analyze-simulations --analyze-result-path "path_to_result" --no-reviews-simulation <no_reviews_sim_id> --reality-simulation <reality_sim_id>  --conf-path <path_to_config_file>
@@ -81,7 +82,7 @@ dotnet-rgit --cmd analyze-simulations --analyze-result-path "path_to_result" --n
 In order to get Mean Reciprocal Rank (MRR), log into the database and run
 
 ```SQL
--- Get MRR using the Id of simulation
+-- Get MRR using the Id of the simulation
 select AVG([MeanReciprocalRank])
   from PullRequestRecommendationResults where LossSimulationId = Id
 ```
@@ -91,11 +92,11 @@ select AVG([MeanReciprocalRank])
 
 ```PowerShell
 # AuthorshipRec Recommender
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy AuthorshipRec --conf-path <path_to_config_file>
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy AuthorshipRec --simulation-type "SeededRandom" --conf-path <path_to_config_file>
 # RevOwnRec Recommender
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy RecOwnRec  --conf-path <path_to_config_file>
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy RecOwnRec  --simulation-type "SeededRandom" --conf-path <path_to_config_file>
 # cHRev Recommender
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy cHRev --conf-path <path_to_config_file>
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy cHRev  --simulation-type "Random" --conf-path <path_to_config_file>
 ```
 
 ---
@@ -104,13 +105,13 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy cHRev --conf-pa
 
 ```PowerShell
 # LearnRec Recommender
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy LearnRec  --conf-path <path_to_config_file>
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy LearnRec --simulation-type "SeededRandom" --conf-path <path_to_config_file>
 # RetentionRec Recommender
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy RetentionRec  --conf-path <path_to_config_file>
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy RetentionRec --simulation-type "SeededRandom"  --conf-path <path_to_config_file>
 # TurnoverRec Recommender
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy TurnoverRec --conf-path <path_to_config_file>
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy TurnoverRec --simulation-type "SeededRandom" --conf-path <path_to_config_file>
 # Sofia Recommender
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy sofia  --conf-path <path_to_config_file>
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy sofia --simulation-type "SeededRandom" --conf-path <path_to_config_file>
 ```
 
 ---
@@ -128,7 +129,7 @@ To calculate the Gini of the actual review workload run [ActualWorkload.r](Workl
 
 ```PowerShell
 #WhoDo recommender
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo  --conf-path <path_to_config_file>
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo --simulation-type "SeededRandom" --conf-path <path_to_config_file>
 
 ```
 ---
@@ -137,7 +138,7 @@ dotnet-rgit --cmd simulate-recommender --recommendation-strategy WhoDo  --conf-p
 
 ```PowerShell
 #SofiaWL recommender
-dotnet-rgit --cmd simulate-recommender --recommendation-strategy SofiaWL  --conf-path <path_to_config_file>
+dotnet-rgit --cmd simulate-recommender --recommendation-strategy SofiaWL --simulation-type "SeededRandom"  --conf-path <path_to_config_file>
 ```
 ---
 
